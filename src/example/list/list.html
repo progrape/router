@@ -1,0 +1,16 @@
+<div class="weui_panel weui_panel_access">
+    <div class="weui_panel_hd">图文组合列表</div>
+    <div class="weui_panel_bd">
+        {{each list as item i}}
+        <a href="#/article/{{item.id}}" class="weui_media_box weui_media_appmsg">
+            <div class="weui_media_hd">
+                <img src="{{item.cover}}" alt="" class="weui_media_appmsg_thumb">
+            </div>
+            <div class="weui_media_bd">
+                <h4 class="weui_media_title">{{item.title}}</h4>
+                <p class="weui_media_desc">{{item.summary}}</p>
+            </div>
+        </a>
+        {{/each}}
+    </div>
+</div>
