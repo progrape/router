@@ -127,7 +127,7 @@ class Router {
             node.innerHTML = html;
             this._$container.appendChild(node);
             // add class
-            if (!isBack && this._options.enter) {
+            if (!isBack && this._options.enter && hasChildren) {
                 node.classList.add(this._options.enter);
             }
 
