@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var pkg = require('./package.json');
 
 module.exports = {
     entry: './src/index.js',
@@ -23,6 +24,11 @@ module.exports = {
             compress: {
                 warnings: false
             }
-        })
+        }),
+        new webpack.BannerPlugin([
+            pkg.name + ' v' + pkg.version + ' (' + pkg.homepage + ')',
+            'Copyright ' + new Date().getFullYear(),
+            'Licensed under the  '+ pkg.license +' license'
+        ].join('\n'))
     ]
 };
