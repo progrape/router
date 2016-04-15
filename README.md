@@ -1,6 +1,6 @@
 ### Simple Router
 
-A very simple router for the **demo** of [weui](https://github.com/weui/weui)
+A very simple router, just for the **demo** of [weui](https://github.com/weui/weui)
 
 ### 预览
 
