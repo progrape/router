@@ -1,4 +1,5 @@
 import * as util from './util';
+import pathToRegexp from 'path-to-regexp';
 
 /**
  * a very simple router for the **demo** of [weui](https://github.com/weui/weui)
@@ -169,19 +170,14 @@ class Router {
     _getRoute(url) {
         for (let i = 0, len = this._routes.length; i < len; i++) {
             let route = this._routes[i];
-            // get the regex of route url
-            const regex = util.getRegExp(route.url);
-
-            // get params from route url
-            // for example:
-            // route config: {url: '/category/:categoryId/post/:postId', ...}
-            // params is ['categoryId', 'postId']
-            const params = util.getParams(route.url);
+            let keys = [];
+            const regex = pathToRegexp(route.url, keys);
             const match = regex.exec(url);
             if (match) {
                 route.params = {};
-                for (let j = 0, l = params.length; j < l; j++) {
-                    const name = params[j];
+                for (let j = 0, l = keys.length; j < l; j++) {
+                    const key = keys[j];
+                    const name = key.name;
                     route.params[name] = match[j + 1];
                 }
                 return route;

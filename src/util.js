@@ -26,37 +26,3 @@ export function getHash(url) {
 export function noop() {
 
 }
-
-/**
- * get route regex (ref to backbone)
- * @param route
- * @returns {RegExp}
- */
-export function getRegExp(route) {
-    const optionalParam = /\((.*?)\)/g;
-    const namedParam = /(\(\?)?:\w+/g;
-    const splatParam = /\*\w+/g;
-    const escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-    route = route.replace(escapeRegExp, '\\$&')
-        .replace(optionalParam, '(?:$1)?')
-        .replace(namedParam, function (match, optional) {
-            return optional ? match : '([^/?]+)';
-        })
-        .replace(splatParam, '([^?]*?)');
-    return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
-}
-
-/**
- * get params from route
- * @param {String} route
- * @returns {Array} params
- */
-export function getParams(route) {
-    const regex = /:(\w+)/g;
-    let params = [];
-    let found;
-    while ((found = regex.exec(route)) !== null) {
-        params.push(found[1]);
-    }
-    return params;
-}
