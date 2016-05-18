@@ -31,11 +31,6 @@ module.exports = {
         extensions: ['', '.js', '.jsx']
     },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            }
-        }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, 'src/example/index.html')
         }),

@@ -102,7 +102,7 @@ class Router {
             // if have child already
             const hasChildren = util.hasChildren(this._$container);
             if (hasChildren) {
-                let child = this._$container.childNodes[0];
+                let child = this._$container.children[0];
                 if (isBack) {
                     child.classList.add(this._options.leave);
                 }
