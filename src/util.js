@@ -15,7 +15,7 @@ export function getHash(url) {
  * @param {String} url
  * @returns {Object}
  */
-export function getRoute(routes, url){
+export function getRoute(routes, url) {
     for (let i = 0, len = routes.length; i < len; i++) {
         let route = routes[i];
         let keys = [];
@@ -32,6 +32,16 @@ export function getRoute(routes, url){
         }
     }
     return null;
+}
+
+/**
+ * has children
+ * @param {HTMLElement} parent
+ * @returns {boolean}
+ */
+export function hasChildren(parent) {
+    const children = parent.children;
+    return children.length > 0;
 }
 
 /**

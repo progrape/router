@@ -100,7 +100,7 @@ class Router {
             const html = typeof route.render === 'function' ? route.render(route.params) : '';
 
             // if have child already
-            const hasChildren = this._$container.hasChildNodes();
+            const hasChildren = util.hasChildren(this._$container);
             if (hasChildren) {
                 let child = this._$container.childNodes[0];
                 if (isBack) {
