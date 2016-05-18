@@ -31,7 +31,7 @@ class Router {
      * @param options
      */
     constructor(options) {
-        this._options = util.extend(this._options, options);
+        this._options = Object.assign({}, this._options, options);
         this._$container = document.querySelector(this._options.container);
     }
 
@@ -56,7 +56,7 @@ class Router {
         this._index--;
 
         const hash = util.getHash(location.href);
-        const route = this._getRoute(hash);
+        const route = util.getRoute(this._routes, hash);
         this.go(route ? hash : this._default);
 
         return this;
@@ -68,7 +68,7 @@ class Router {
      * @returns {Router}
      */
     push(route) {
-        route = util.extend({
+        route = Object.assign({}, {
             url: '*',
             className: '',
             render: util.noop,
@@ -95,7 +95,7 @@ class Router {
      * @returns {Router}
      */
     go(url, isBack = false) {
-        const route = this._getRoute(url);
+        const route = util.getRoute(this._routes, url);
         if (route) {
             const html = typeof route.render === 'function' ? route.render(route.params) : '';
 
@@ -159,31 +159,6 @@ class Router {
             throw new Error(`url ${url} was not found`);
         }
         return this;
-    }
-
-    /**
-     * get route config by hash
-     * @param {String} url
-     * @returns {Object}
-     * @private
-     */
-    _getRoute(url) {
-        for (let i = 0, len = this._routes.length; i < len; i++) {
-            let route = this._routes[i];
-            let keys = [];
-            const regex = pathToRegexp(route.url, keys);
-            const match = regex.exec(url);
-            if (match) {
-                route.params = {};
-                for (let j = 0, l = keys.length; j < l; j++) {
-                    const key = keys[j];
-                    const name = key.name;
-                    route.params[name] = match[j + 1];
-                }
-                return route;
-            }
-        }
-        return null;
     }
 }
 

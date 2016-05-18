@@ -3,5 +3,5 @@
       "es2015",
       "stage-3"
     ],
-    "plugins": ["transform-class-properties", "add-module-exports"]
+    "plugins": ["transform-object-assign", "transform-class-properties", "add-module-exports"]
 }
