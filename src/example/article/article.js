@@ -8,5 +8,8 @@ export default {
         const id = this.params.id;
         const article = data.filter(article => article.id == id)[0];
         return template.compile(tpl)({article: article});
+    },
+    bind: function () {
+
     }
 };

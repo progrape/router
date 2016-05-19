@@ -150,9 +150,9 @@ class Router {
 
             }
 
-            if (typeof route.bind === 'function' && !route.__isBind) {
+            if (typeof route.bind === 'function'/* && !route.__isBind*/) {
                 route.bind.call(node);
-                route.__isBind = true;
+                //route.__isBind = true;
             }
         }
         else {
