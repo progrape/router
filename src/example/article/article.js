@@ -1,6 +1,6 @@
 import template from 'art-template/dist/template-debug';
 import Swiper from 'iswiper';
-import data from '../data';
+import dataManager from '../lib/dataManager';
 import tpl from 'raw!./article.html';
 import './article.less';
 
@@ -14,6 +14,7 @@ export default {
     url: '/article/:id',
     render: function () {
         const id = this.params.id;
+        const data = dataManager.getData('data');
         const article = data.filter(article => article.id == id)[0];
         const html = template.compile(tpl)({article: article, items: [swiper1, swiper2, swiper3, swiper4]});
 
@@ -29,7 +30,8 @@ export default {
             direction: 'horizontal'
         });
         swiper.on('swiped', (prev, current) => {
-            console.log(prev, current);
+            console.log('prev', prev);
+            console.log('current', current);
         });
     }
 };

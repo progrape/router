@@ -98,13 +98,8 @@ class Router {
         const route = util.getRoute(this._routes, url);
         if (route) {
 
-            const callback = (err, html = '') => {
-                if (err) {
-                    throw err;
-                }
-
-                // if have child already
-                const hasChildren = util.hasChildren(this._$container);
+            const leave = (hasChildren) => {
+                // if have child already, then remove it
                 if (hasChildren) {
                     let child = this._$container.children[0];
                     if (isBack) {
@@ -119,9 +114,10 @@ class Router {
                     else {
                         child.parentNode.removeChild(child);
                     }
-
                 }
+            };
 
+            const enter = (hasChildren, html) => {
                 let node = document.createElement('div');
 
                 // add class name
@@ -145,7 +141,6 @@ class Router {
                     node.classList.remove(this._options.enter);
                 }
 
-
                 location.hash = `#${url}`;
                 try {
                     isBack ? this._index-- : this._index++;
@@ -158,6 +153,21 @@ class Router {
                     route.bind.call(node);
                     //route.__isBind = true;
                 }
+            };
+
+            const hasChildren = util.hasChildren(this._$container);
+
+            // pop current page
+            leave(hasChildren);
+
+            // callback
+            const callback = (err, html = '') => {
+                if (err) {
+                    throw err;
+                }
+
+                // push next page
+                enter(hasChildren, html);
             };
 
             const res = route.render(callback);
