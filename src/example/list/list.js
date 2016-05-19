@@ -5,8 +5,13 @@ import tpl from 'raw!./list.html';
 
 export default {
     url: '/',
-    render: function () {
-        return template.compile(tpl)({list: data});
+    render: function (callback) {
+        const html = template.compile(tpl)({list: data});
+        // async
+        setTimeout(() => {
+            callback(null, html);
+        }, 300);
+
     },
     bind: function () {
 

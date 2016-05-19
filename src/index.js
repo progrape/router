@@ -97,62 +97,83 @@ class Router {
     go(url, isBack = false) {
         const route = util.getRoute(this._routes, url);
         if (route) {
-            const html = typeof route.render === 'function' ? route.render(route.params) : '';
 
-            // if have child already
-            const hasChildren = util.hasChildren(this._$container);
-            if (hasChildren) {
-                let child = this._$container.children[0];
-                if (isBack) {
-                    child.classList.add(this._options.leave);
+            const callback = (err, html = '') => {
+                if (err) {
+                    throw err;
                 }
 
-                if (this._options.leaveTimeout > 0) {
-                    setTimeout(() => {
+                // if have child already
+                const hasChildren = util.hasChildren(this._$container);
+                if (hasChildren) {
+                    let child = this._$container.children[0];
+                    if (isBack) {
+                        child.classList.add(this._options.leave);
+                    }
+
+                    if (this._options.leaveTimeout > 0) {
+                        setTimeout(() => {
+                            child.parentNode.removeChild(child);
+                        }, this._options.leaveTimeout);
+                    }
+                    else {
                         child.parentNode.removeChild(child);
-                    }, this._options.leaveTimeout);
+                    }
+
+                }
+
+                let node = document.createElement('div');
+
+                // add class name
+                if (route.className) {
+                    node.classList.add(route.className);
+                }
+
+                node.innerHTML = html;
+                this._$container.appendChild(node);
+                // add class
+                if (!isBack && this._options.enter && hasChildren) {
+                    node.classList.add(this._options.enter);
+                }
+
+                if (this._options.enterTimeout > 0) {
+                    setTimeout(() => {
+                        node.classList.remove(this._options.enter);
+                    }, this._options.enterTimeout);
                 }
                 else {
-                    child.parentNode.removeChild(child);
+                    node.classList.remove(this._options.enter);
                 }
 
-            }
 
-            let node = document.createElement('div');
+                location.hash = `#${url}`;
+                try {
+                    isBack ? this._index-- : this._index++;
+                    history.replaceState && history.replaceState({_index: this._index}, '', location.href);
+                } catch (e) {
 
-            // add class name
-            if (route.className) {
-                node.classList.add(route.className);
-            }
+                }
 
-            node.innerHTML = html;
-            this._$container.appendChild(node);
-            // add class
-            if (!isBack && this._options.enter && hasChildren) {
-                node.classList.add(this._options.enter);
-            }
+                if (typeof route.bind === 'function'/* && !route.__isBind*/) {
+                    route.bind.call(node);
+                    //route.__isBind = true;
+                }
+            };
 
-            if (this._options.enterTimeout > 0) {
-                setTimeout(() => {
-                    node.classList.remove(this._options.enter);
-                }, this._options.enterTimeout);
+            const res = route.render(callback);
+            // promise
+            if (res && typeof res.then === 'function') {
+                res.then((html) => {
+                    callback(null, html);
+                }, callback);
             }
+            // synchronous
+            else if (route.render.length === 0) {
+                callback(null, res);
+            }
+            // callback
             else {
-                node.classList.remove(this._options.enter);
-            }
 
-
-            location.hash = `#${url}`;
-            try {
-                isBack ? this._index-- : this._index++;
-                history.replaceState && history.replaceState({_index: this._index}, '', location.href);
-            } catch (e) {
-
-            }
-
-            if (typeof route.bind === 'function'/* && !route.__isBind*/) {
-                route.bind.call(node);
-                //route.__isBind = true;
             }
         }
         else {

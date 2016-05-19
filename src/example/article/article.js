@@ -15,7 +15,14 @@ export default {
     render: function () {
         const id = this.params.id;
         const article = data.filter(article => article.id == id)[0];
-        return template.compile(tpl)({article: article, items: [swiper1, swiper2, swiper3, swiper4]});
+        const html = template.compile(tpl)({article: article, items: [swiper1, swiper2, swiper3, swiper4]});
+
+        // 可以返回一个 promise
+        return new Promise((resolve, reject) => {
+            resolve(html);
+        });
+        // 也可以直接返回 html
+        // return html;
     },
     bind: function () {
         const swiper = new Swiper({

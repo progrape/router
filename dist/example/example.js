@@ -221,63 +221,84 @@
 	            var route = util.getRoute(this._routes, url);
 	            if (route) {
 	                (function () {
-	                    var html = typeof route.render === 'function' ? route.render(route.params) : '';
 
-	                    // if have child already
-	                    var hasChildren = util.hasChildren(_this2._$container);
-	                    if (hasChildren) {
-	                        (function () {
-	                            var child = _this2._$container.children[0];
-	                            if (isBack) {
-	                                child.classList.add(_this2._options.leave);
-	                            }
+	                    var callback = function callback(err) {
+	                        var html = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
 
-	                            if (_this2._options.leaveTimeout > 0) {
-	                                setTimeout(function () {
-	                                    child.parentNode.removeChild(child);
-	                                }, _this2._options.leaveTimeout);
-	                            } else {
-	                                child.parentNode.removeChild(child);
-	                            }
-	                        })();
-	                    }
-
-	                    var node = document.createElement('div');
-
-	                    // add class name
-	                    if (route.className) {
-	                        node.classList.add(route.className);
-	                    }
-
-	                    node.innerHTML = html;
-	                    _this2._$container.appendChild(node);
-	                    // add class
-	                    if (!isBack && _this2._options.enter && hasChildren) {
-	                        node.classList.add(_this2._options.enter);
-	                    }
-
-	                    if (_this2._options.enterTimeout > 0) {
-	                        setTimeout(function () {
-	                            node.classList.remove(_this2._options.enter);
-	                        }, _this2._options.enterTimeout);
-	                    } else {
-	                        node.classList.remove(_this2._options.enter);
-	                    }
-
-	                    location.hash = '#' + url;
-	                    try {
-	                        isBack ? _this2._index-- : _this2._index++;
-	                        history.replaceState && history.replaceState({ _index: _this2._index }, '', location.href);
-	                    } catch (e) {}
-
-	                    if (typeof route.bind === 'function' /* && !route.__isBind*/) {
-	                            route.bind.call(node);
-	                            //route.__isBind = true;
+	                        if (err) {
+	                            throw err;
 	                        }
+
+	                        // if have child already
+	                        var hasChildren = util.hasChildren(_this2._$container);
+	                        if (hasChildren) {
+	                            (function () {
+	                                var child = _this2._$container.children[0];
+	                                if (isBack) {
+	                                    child.classList.add(_this2._options.leave);
+	                                }
+
+	                                if (_this2._options.leaveTimeout > 0) {
+	                                    setTimeout(function () {
+	                                        child.parentNode.removeChild(child);
+	                                    }, _this2._options.leaveTimeout);
+	                                } else {
+	                                    child.parentNode.removeChild(child);
+	                                }
+	                            })();
+	                        }
+
+	                        var node = document.createElement('div');
+
+	                        // add class name
+	                        if (route.className) {
+	                            node.classList.add(route.className);
+	                        }
+
+	                        node.innerHTML = html;
+	                        _this2._$container.appendChild(node);
+	                        // add class
+	                        if (!isBack && _this2._options.enter && hasChildren) {
+	                            node.classList.add(_this2._options.enter);
+	                        }
+
+	                        if (_this2._options.enterTimeout > 0) {
+	                            setTimeout(function () {
+	                                node.classList.remove(_this2._options.enter);
+	                            }, _this2._options.enterTimeout);
+	                        } else {
+	                            node.classList.remove(_this2._options.enter);
+	                        }
+
+	                        location.hash = '#' + url;
+	                        try {
+	                            isBack ? _this2._index-- : _this2._index++;
+	                            history.replaceState && history.replaceState({ _index: _this2._index }, '', location.href);
+	                        } catch (e) {}
+
+	                        if (typeof route.bind === 'function' /* && !route.__isBind*/) {
+	                                route.bind.call(node);
+	                                //route.__isBind = true;
+	                            }
+	                    };
+
+	                    var res = route.render(callback);
+	                    // promise
+	                    if (res && typeof res.then === 'function') {
+	                        res.then(function (html) {
+	                            callback(null, html);
+	                        }, callback);
+	                    }
+	                    // synchronous
+	                    else if (route.render.length === 0) {
+	                            callback(null, res);
+	                        }
+	                        // callback
+	                        else {}
 	                })();
 	            } else {
-	                    throw new Error('url ' + url + ' was not found');
-	                }
+	                throw new Error('url ' + url + ' was not found');
+	            }
 	            return this;
 	        }
 	    }]);
@@ -1160,8 +1181,12 @@
 
 	exports.default = {
 	    url: '/',
-	    render: function render() {
-	        return _templateDebug2.default.compile(_list2.default)({ list: _data2.default });
+	    render: function render(callback) {
+	        var html = _templateDebug2.default.compile(_list2.default)({ list: _data2.default });
+	        // async
+	        setTimeout(function () {
+	            callback(null, html);
+	        }, 300);
 	    },
 	    bind: function bind() {}
 	};
@@ -11858,7 +11883,14 @@
 	        var article = _data2.default.filter(function (article) {
 	            return article.id == id;
 	        })[0];
-	        return _templateDebug2.default.compile(_article2.default)({ article: article, items: [_swiper2.default, _swiper4.default, _swiper6.default, _swiper8.default] });
+	        var html = _templateDebug2.default.compile(_article2.default)({ article: article, items: [_swiper2.default, _swiper4.default, _swiper6.default, _swiper8.default] });
+
+	        // 可以返回一个 promise
+	        return new Promise(function (resolve, reject) {
+	            resolve(html);
+	        });
+	        // 也可以直接返回 html
+	        // return html;
 	    },
 	    bind: function bind() {
 	        var swiper = new _iswiper2.default({
