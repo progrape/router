@@ -88,7 +88,48 @@ npm start
 |-----------|-------|---
 |url        |String | 以 `/` 开头的 url，会体现在 hash，支持参数，如：`/user/:userId/post/:posdId`
 |className  |String | 可选，该页面可以添加的额外类名，以便控制该页面下的样式
-|render     |function| 页面渲染方法，该方法返回的字符串，将作为该页面的 HTML 内容
+|render     |function| 页面渲染方法，支持同步和异步, 可以直接返回 html 字符串，可以返回 `promise` 对象，也可以接收 `callback` 参数
+
+route 示例如下:
+
+同步
+
+```javascript
+{
+    url: '/home',
+    className: 'home',
+    render: function (){
+        return '<h1>home</h1>';
+    }
+}
+```
+
+promise
+
+```javascript
+{
+    url: '/home',
+    className: 'home',
+    render: function (){
+        return new Promise(function (resolve, reject){
+            resolve('<h1>home</h1>');
+        });
+    }
+}
+```
+
+callback
+
+```javascript
+{
+    url: '/home',
+    className: 'home',
+    render: function (callback){
+        callback(null, '<h1>home</h1>');
+    }
+}
+```
+
 
 ##### setDefault(url)
 
