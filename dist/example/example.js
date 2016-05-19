@@ -11818,16 +11818,39 @@
 
 	var _templateDebug2 = _interopRequireDefault(_templateDebug);
 
+	var _iswiper = __webpack_require__(15);
+
+	var _iswiper2 = _interopRequireDefault(_iswiper);
+
 	var _data = __webpack_require__(12);
 
 	var _data2 = _interopRequireDefault(_data);
 
-	var _article = __webpack_require__(15);
+	var _article = __webpack_require__(16);
 
 	var _article2 = _interopRequireDefault(_article);
 
+	__webpack_require__(17);
+
+	var _swiper = __webpack_require__(19);
+
+	var _swiper2 = _interopRequireDefault(_swiper);
+
+	var _swiper3 = __webpack_require__(20);
+
+	var _swiper4 = _interopRequireDefault(_swiper3);
+
+	var _swiper5 = __webpack_require__(21);
+
+	var _swiper6 = _interopRequireDefault(_swiper5);
+
+	var _swiper7 = __webpack_require__(22);
+
+	var _swiper8 = _interopRequireDefault(_swiper7);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// 图片来自微软 cn.bing.com , 版权归原作者所有
 	exports.default = {
 	    url: '/article/:id',
 	    render: function render() {
@@ -11835,17 +11858,436 @@
 	        var article = _data2.default.filter(function (article) {
 	            return article.id == id;
 	        })[0];
-	        return _templateDebug2.default.compile(_article2.default)({ article: article });
+	        return _templateDebug2.default.compile(_article2.default)({ article: article, items: [_swiper2.default, _swiper4.default, _swiper6.default, _swiper8.default] });
 	    },
-	    bind: function bind() {}
+	    bind: function bind() {
+	        var swiper = new _iswiper2.default({
+	            direction: 'horizontal'
+	        });
+	        swiper.on('swiped', function (prev, current) {
+	            console.log(prev, current);
+	        });
+	    }
 	};
 	module.exports = exports['default'];
 
 /***/ },
 /* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*!
+	 * iSwiper 1.4.2 (https://github.com/wechatui/swiper.git)
+	 * Copyright 2016 wechat ui team.
+	 * Licensed under the MIT license
+	 */
+	(function (global, factory) {
+	   true ? module.exports = factory() :
+	  typeof define === 'function' && define.amd ? define(factory) :
+	  (global.Swiper = factory());
+	}(this, function () { 'use strict';
+
+	  var babelHelpers = {};
+
+	  babelHelpers.classCallCheck = function (instance, Constructor) {
+	    if (!(instance instanceof Constructor)) {
+	      throw new TypeError("Cannot call a class as a function");
+	    }
+	  };
+
+	  babelHelpers.createClass = function () {
+	    function defineProperties(target, props) {
+	      for (var i = 0; i < props.length; i++) {
+	        var descriptor = props[i];
+	        descriptor.enumerable = descriptor.enumerable || false;
+	        descriptor.configurable = true;
+	        if ("value" in descriptor) descriptor.writable = true;
+	        Object.defineProperty(target, descriptor.key, descriptor);
+	      }
+	    }
+
+	    return function (Constructor, protoProps, staticProps) {
+	      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	      if (staticProps) defineProperties(Constructor, staticProps);
+	      return Constructor;
+	    };
+	  }();
+
+	  babelHelpers;
+
+	  /**
+	   * simple `extend` method
+	   * @param target
+	   * @param source
+	   * @returns {*}
+	   */
+	  function extend(target, source) {
+	    for (var key in source) {
+	      target[key] = source[key];
+	    }
+	    return target;
+	  }
+
+	  /**
+	   * noop
+	   */
+	  function noop() {}
+
+	  /**
+	   * Swiper
+	   */
+
+	  var Swiper = function () {
+
+	      /**
+	       * constructor
+	       * @param {Object} options
+	       */
+
+	      function Swiper() {
+	          var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	          babelHelpers.classCallCheck(this, Swiper);
+
+	          this.version = '1.4.2';
+	          this._options = extend({
+	              container: '.swiper', /* container's selector */
+	              item: '.item', /* item's selector */
+	              direction: 'vertical', /* swiper's direction, vertical or horizontal */
+	              activeClass: 'active', /* current active item's class name */
+	              threshold: 50, /* threshold */
+	              duration: 300 /* duration */
+	          }, options);
+	          this._start = {};
+	          this._move = {};
+	          this._end = {};
+	          this._prev = 0;
+	          this._current = 0;
+	          this._offset = 0;
+	          this._goto = -1;
+	          this._eventHandlers = {};
+
+	          /**
+	           * container
+	           * @type {Element}
+	           */
+	          this.$container = document.querySelector(this._options.container);
+	          /**
+	           * item list
+	           * @type {NodeList}
+	           */
+	          this.$items = this.$container.querySelectorAll(this._options.item);
+	          /**
+	           * count of item list
+	           * @type {number}
+	           */
+	          this.count = this.$items.length;
+
+	          /**
+	           * container's width
+	           * @type {number}
+	           * @private
+	           */
+	          this._width = this.$container.offsetWidth;
+	          /**
+	           * container's height
+	           * @type {number}
+	           * @private
+	           */
+	          this._height = this.$container.offsetHeight;
+
+	          this._init();
+	          this._bind();
+	      }
+
+	      /**
+	       * init
+	       * @private
+	       */
+
+
+	      babelHelpers.createClass(Swiper, [{
+	          key: '_init',
+	          value: function _init() {
+	              var _this = this;
+
+	              // if direction is vertical, then container's width is container's width, height is container's height*count
+	              var w = this._width;
+	              var h = this._height * this.count;
+
+	              if (this._options.direction === 'horizontal') {
+	                  w = this._width * this.count;
+	                  h = this._height;
+	              }
+
+	              // set container's width and height
+	              this.$container.style.width = w + 'px';
+	              this.$container.style.height = h + 'px';
+
+	              Array.prototype.forEach.call(this.$items, function ($item, key) {
+	                  $item.style.width = _this._width + 'px';
+	                  $item.style.height = _this._height + 'px';
+	              });
+
+	              this._activate(0);
+	          }
+
+	          /**
+	           * bind event listener
+	           * @private
+	           */
+
+	      }, {
+	          key: '_bind',
+	          value: function _bind() {
+	              var _this2 = this;
+
+	              this.$container.addEventListener('touchstart', function (e) {
+	                  _this2._start.x = e.changedTouches[0].pageX;
+	                  _this2._start.y = e.changedTouches[0].pageY;
+
+	                  _this2.$container.style['-webkit-transition'] = 'none';
+	                  _this2.$container.style.transition = 'none';
+	              }, false);
+
+	              this.$container.addEventListener('touchmove', function (e) {
+	                  _this2._move.x = e.changedTouches[0].pageX;
+	                  _this2._move.y = e.changedTouches[0].pageY;
+
+	                  var distance = _this2._move.y - _this2._start.y;
+	                  var translate = distance - _this2._offset;
+	                  var transform = 'translate3d(0, ' + translate + 'px, 0)';
+
+	                  if (_this2._options.direction === 'horizontal') {
+	                      distance = _this2._move.x - _this2._start.x;
+	                      translate = distance - _this2._offset;
+	                      transform = 'translate3d(' + translate + 'px, 0, 0)';
+	                  }
+
+	                  _this2.$container.style['-webkit-transform'] = transform;
+	                  _this2.$container.style.transform = transform;
+
+	                  e.preventDefault();
+	              }, false);
+
+	              this.$container.addEventListener('touchend', function (e) {
+	                  _this2._end.x = e.changedTouches[0].pageX;
+	                  _this2._end.y = e.changedTouches[0].pageY;
+
+	                  var distance = _this2._end.y - _this2._start.y;
+	                  if (_this2._options.direction === 'horizontal') {
+	                      distance = _this2._end.x - _this2._start.x;
+	                  }
+
+	                  _this2._prev = _this2._current;
+	                  if (distance > _this2._options.threshold) {
+	                      _this2._current = _this2._current === 0 ? 0 : --_this2._current;
+	                  } else if (distance < -_this2._options.threshold) {
+	                      _this2._current = _this2._current < _this2.count - 1 ? ++_this2._current : _this2._current;
+	                  }
+
+	                  _this2._show(_this2._current);
+	              }, false);
+
+	              this.$container.addEventListener('transitionEnd', function (e) {}, false);
+
+	              this.$container.addEventListener('webkitTransitionEnd', function (e) {
+	                  if (e.target !== _this2.$container) {
+	                      return false;
+	                  }
+
+	                  if (_this2._current != _this2._prev || _this2._goto > -1) {
+	                      _this2._activate(_this2._current);
+	                      var cb = _this2._eventHandlers['swiped'] || noop;
+	                      cb.apply(_this2, [_this2._prev, _this2._current]);
+	                      _this2._goto = -1;
+	                  }
+	                  e.preventDefault();
+	              }, false);
+	          }
+
+	          /**
+	           * show
+	           * @param {Number} index
+	           * @private
+	           */
+
+	      }, {
+	          key: '_show',
+	          value: function _show(index) {
+	              this._offset = index * this._height;
+	              var transform = 'translate3d(0, -' + this._offset + 'px, 0)';
+
+	              if (this._options.direction === 'horizontal') {
+	                  this._offset = index * this._width;
+	                  transform = 'translate3d(-' + this._offset + 'px, 0, 0)';
+	              }
+
+	              var duration = this._options.duration + 'ms';
+
+	              this.$container.style['-webkit-transition'] = duration;
+	              this.$container.style.transition = duration;
+	              this.$container.style['-webkit-transform'] = transform;
+	              this.$container.style.transform = transform;
+	          }
+
+	          /**
+	           * activate
+	           * @param {Number} index
+	           * @private
+	           */
+
+	      }, {
+	          key: '_activate',
+	          value: function _activate(index) {
+	              var clazz = this._options.activeClass;
+	              Array.prototype.forEach.call(this.$items, function ($item, key) {
+	                  $item.classList.remove(clazz);
+	                  if (index === key) {
+	                      $item.classList.add(clazz);
+	                  }
+	              });
+	          }
+
+	          /**
+	           * go to some page
+	           * @param {Number} index
+	           * @returns {*}
+	           */
+
+	      }, {
+	          key: 'go',
+	          value: function go(index) {
+	              if (index < 0 || index > this.count - 1 || index === this._current) {
+	                  return;
+	              }
+
+	              if (index === 0) {
+	                  this._current = 0;
+	                  this._prev = 0;
+	              } else {
+	                  this._current = index;
+	                  this._prev = index - 1;
+	              }
+
+	              this._goto = index;
+	              this._show(this._current);
+
+	              return this;
+	          }
+
+	          /**
+	           * next page
+	           * @returns {*}
+	           */
+
+	      }, {
+	          key: 'next',
+	          value: function next() {
+	              if (this._current >= this.count - 1) {
+	                  return;
+	              }
+	              this._prev = this._current;
+	              this._show(++this._current);
+	              return this;
+	          }
+
+	          /**
+	           * event listener
+	           * @param {String} event
+	           * @param {Function} callback
+	           * @returns {Swiper}
+	           */
+
+	      }, {
+	          key: 'on',
+	          value: function on(event, callback) {
+	              if (this._eventHandlers[event]) {
+	                  throw new Error('event ' + event + ' is already register');
+	              }
+	              if (typeof callback !== 'function') {
+	                  throw new Error('parameter callback must be a function');
+	              }
+
+	              this._eventHandlers[event] = callback;
+
+	              return this;
+	          }
+	      }]);
+	      return Swiper;
+	  }();
+
+	  return Swiper;
+
+	}));
+
+/***/ },
+/* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<article class=\"weui_article\">\n    <section>\n        <h2 class=\"title\">{{article.title}}</h2>\n        <section>\n            <p>{{article.summary}}</p>\n        </section>\n        <section>\n            <p>{{article.summary}}</p>\n        </section>\n    </section>\n</article>"
+	module.exports = "<div class=\"swiper\">\n    {{each items as item i}}\n    <div class=\"item\" style=\"background: url('{{item}}'); background-size: cover; -webkit-background-size: cover;\">\n\n    </div>\n    {{/each}}\n</div>\n<article class=\"weui_article\">\n    <section>\n        <h2 class=\"title\">{{article.title}}</h2>\n        <section>\n            <p>{{article.summary}}</p>\n        </section>\n        <section>\n            <p>{{article.summary}}</p>\n        </section>\n    </section>\n</article>"
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(18);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(8)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js!./../../../node_modules/less-loader/index.js!./article.less", function() {
+				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js!./../../../node_modules/less-loader/index.js!./article.less");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(7)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".swiper {\n  height: 200px;\n  overflow: hidden;\n  -webkit-transition: all 0.3s ease;\n  transition: all 0.3s ease;\n}\n.item {\n  height: 100%;\n  background-position: center center;\n  background-size: cover;\n  position: relative;\n  overflow: hidden;\n  float: left;\n}\n.item.active .animated {\n  -webkit-animation-fill-mode: both;\n          animation-fill-mode: both;\n  opacity: 1;\n}\n.item:not(.active) .animated {\n  -webkit-animation: none;\n          animation: none;\n  opacity: 0;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "8d009c9d91ea14721eaff19d32237d40.png";
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "b8506bdb1a762806f909f5c12cf8d92b.png";
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "b87cd3b87e12ff32ce7c52b6c3a13945.png";
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "47e04b2447b9170b0657988bf64d2126.png";
 
 /***/ }
 /******/ ]);

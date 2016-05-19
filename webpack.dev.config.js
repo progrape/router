@@ -23,6 +23,10 @@ module.exports = {
                 test: /\.less$/,
                 exclude: /node_modules/,
                 loader: 'style!css!postcss!less'
+            }, {
+                test: /\.png/,
+                exclude: /node_modules/,
+                loader: 'file'
             }
         ]
     },
