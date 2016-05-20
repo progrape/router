@@ -93,7 +93,16 @@ describe('util.hasChildren', () => {
         expect(hasChildren).to.be.equal(false);
     });
 
-    it('should hav children when body is not empty', () => {
+    it('should have no children when body is empty', () => {
+        const document = jsdom('hello');
+        const body = document.body;
+
+        const hasChildren = util.hasChildren(body);
+
+        expect(hasChildren).to.be.equal(false);
+    });
+
+    it('should have children when body is not empty', () => {
         const document = jsdom('<div>router</div>');
         const body = document.body;
 
