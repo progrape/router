@@ -1,5 +1,4 @@
 import * as util from './util';
-import pathToRegexp from 'path-to-regexp';
 
 /**
  * a very simple router for the **demo** of [weui](https://github.com/weui/weui)
