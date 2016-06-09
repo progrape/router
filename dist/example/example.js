@@ -175,6 +175,14 @@
 	    }, {
 	        key: 'push',
 	        value: function push(route) {
+
+	            var exist = this._routes.filter(function (r) {
+	                return r.url === route.url;
+	            })[0];
+	            if (exist) {
+	                throw new Error('route ' + route.url + ' is existed');
+	            }
+
 	            route = _extends({}, {
 	                url: '*',
 	                className: '',

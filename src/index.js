@@ -67,6 +67,12 @@ class Router {
      * @returns {Router}
      */
     push(route) {
+
+        const exist = this._routes.filter(r => r.url === route.url)[0];
+        if (exist) {
+            throw new Error(`route ${route.url} is existed`);
+        }
+
         route = Object.assign({}, {
             url: '*',
             className: '',
