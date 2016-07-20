@@ -42,6 +42,9 @@ class Router {
 
         // why not `history.pushState`? see https://github.com/weui/weui/issues/26, Router in wechat webview
         window.addEventListener('hashchange', (event) => {
+            if (typeof event.newURL === 'undefined') {
+                event.newURL = location.href;
+            }
             const hash = util.getHash(event.newURL);
             const state = history.state || {};
 
@@ -130,8 +133,16 @@ class Router {
                     node.classList.add(route.className);
                 }
 
-                node.innerHTML = html;
-                this._$container.appendChild(node);
+                try {
+                    node.innerHTML = html;
+                    this._$container.appendChild(node);
+                } catch (e) {
+                    if (typeof window.toStaticHTML  === 'function') {
+                        node.innerHTML = window.toStaticHTML(html);
+                        this._$container.appendChild(node);
+                    }
+                }
+                
                 // add class
                 if (!isBack && this._options.enter && hasChildren) {
                     node.classList.add(this._options.enter);
