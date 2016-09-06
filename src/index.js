@@ -42,7 +42,10 @@ class Router {
 
         // why not `history.pushState`? see https://github.com/weui/weui/issues/26, Router in wechat webview
         window.addEventListener('hashchange', (event) => {
+            const old_hash = util.getHash(event.oldURL);
             const hash = util.getHash(event.newURL);
+            // fix '/' repeat see https://github.com/progrape/router/issues/21
+            if(old_hash === hash) return;   
             const state = history.state || {};
 
             this.go(hash, state._index <= this._index);
