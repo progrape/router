@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+import {jsdom} from 'jsdom';
 import * as util from '../../src/util';
 
 describe('util.getHash', () => {
@@ -79,5 +80,34 @@ describe('util.getRoute', () => {
         expect(route.render).to.be.equal(routes[2].render);
         expect(route.params['userId']).to.be.equal(userId);
         expect(route.params['postId']).to.be.equal(postId);
+    });
+});
+
+describe('util.hasChildren', () => {
+    it('should have no children when body is empty', () => {
+        const document = jsdom('   ');
+        const body = document.body;
+
+        const hasChildren = util.hasChildren(body);
+
+        expect(hasChildren).to.be.equal(false);
+    });
+
+    it('should have no children when body is empty', () => {
+        const document = jsdom('hello');
+        const body = document.body;
+
+        const hasChildren = util.hasChildren(body);
+
+        expect(hasChildren).to.be.equal(false);
+    });
+
+    it('should have children when body is not empty', () => {
+        const document = jsdom('<div>router</div>');
+        const body = document.body;
+
+        const hasChildren = util.hasChildren(body);
+
+        expect(hasChildren).to.be.equal(true);
     });
 });
